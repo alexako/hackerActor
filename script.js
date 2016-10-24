@@ -1,7 +1,7 @@
 var sourceFile = 'https://raw.githubusercontent.com/alexako/CustomerManagement/master/CustomerRegistration/Menu.cs';
 var url = 'https://gist.githubusercontent.com/alexako/6838e1facd6e7943d66da74793e94f53/raw/0f48c2bf09cd56d503ee0d5a202b9b3bb0e2baf2/asciidog.txt';
 var code = null;
-var index = 0;
+var index = 237;
 var awesome = 0;
 var awesomeMode = null;
 var ascii = null;
@@ -15,11 +15,7 @@ function loadSource() {
   })
 }
 
-function generateCode(key) {
-  if (key.keyCode != 122 && key.keyCode != 116) {
-    key.preventDefault();
-  }
-
+function processSecretKeyword(key) {
   if (key.keyCode == 75) {
     if (awesome == 0) { awesome++; console.log("Nice!"); }
   }
@@ -45,7 +41,29 @@ function generateCode(key) {
     }
     awesome = 0;
   }
+}
 
+function checkIfAwesomeModeEnabled() {
+  if (awesomeMode) {
+    triggerAwesomeMode();
+    awesomeMode = null;
+  }
+}
+
+function triggerAwesomeMode() {
+  $("#terminal").html("");
+  for (var i=0; i<ascii.length; i++) {
+    $("#terminal").append("<div>" + ascii[i] + "</div");
+  }
+}
+
+function checkForSpecialKey(key) {
+  if (key.keyCode != 122 && key.keyCode != 116) {
+    key.preventDefault();
+  }
+}
+
+function generateCode(key) {
   if (code) {
     var content = $("#terminal").html();
     var newline = new RegExp("\n", "g");
@@ -53,7 +71,7 @@ function generateCode(key) {
     var tab = new RegExp("\\t", "g");
 
     index += Math.floor(Math.random() * 4) + 1;
-    var typed = $("#terminal").text(code.substring(0, index)).html();
+    var typed = $("#terminal").text(code.substring(237, index)).html();
     $("#terminal").html(typed.replace(newline, "<br/>").replace(space, "&nbsp;").replace(tab, "&nbsp;&nbsp;&nbsp;&nbsp"));
     $("#terminal").append("<div id='cursor'></div>");
     window.scrollBy(0,75);
@@ -61,20 +79,15 @@ function generateCode(key) {
   else {
     loadSource();
   }
-
-  if (awesomeMode) {
-    $("#terminal").html("");
-    for (var i=0; i<ascii.length; i++) {
-      $("#terminal").append("<div>" + ascii[i] + "</div");
-    }
-    awesomeMode = null;
-  }
 }
 
 $(function() {
   $(document).keydown(
     function(event) {
+      checkForSpecialKey(event);
+      processSecretKeyword(event);
       generateCode(event);
+      checkIfAwesomeModeEnabled();
     }
   )
 })
